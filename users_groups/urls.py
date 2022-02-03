@@ -18,7 +18,7 @@ from django.urls import path
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenVerifyView, TokenRefreshView
 
-from users.views import UserList, UserDetail, GroupList
+from users.views import UserList, UserDetail, GroupList, get_cart_items
 
 admin.autodiscover()
 
@@ -30,4 +30,5 @@ urlpatterns = [
     path('users/', UserList.as_view(), name='users_list'),
     path('users/<int:pk>/', UserDetail.as_view(), name='users_detail'),
     path('groups/', GroupList.as_view(), name='groups_detail'),
+    path('cart/', get_cart_items)
 ]
