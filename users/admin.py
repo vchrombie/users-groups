@@ -1,10 +1,10 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import CustomUser
+from .models import User
 
 
-class CustomUserAdmin(UserAdmin):
+class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {
             'fields': ('phone_number', 'password',)
@@ -31,4 +31,4 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('phone_number',)
 
 
-admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(User, UserAdmin)

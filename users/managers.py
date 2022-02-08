@@ -1,7 +1,9 @@
 from django.contrib.auth.base_user import BaseUserManager
 
 
-class CustomUserManager(BaseUserManager):
+class UserManager(BaseUserManager):
+
+    use_in_migrations = True
 
     def _create_user(self, phone_number, password=None, **extra_fields):
 
