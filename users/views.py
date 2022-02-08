@@ -1,71 +1,102 @@
-from django.contrib.auth.models import Group
+import datetime
+import jwt
 
-from rest_framework import generics, permissions
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from django.contrib.auth import get_user_model
+
+from rest_framework import permissions, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
+from rest_framework.views import APIView
 
-from .models import CustomUser
-from .serializers import UserSerializer, GroupSerializer
+from .serializers import UserSerializer
 
-import requests
-
-TOKEN_OBTAIN_ENDPOINT = 'http://localhost:8080/api/token/'
-CART_ENDPOINT = 'http://localhost:8080/cart/'
-
-USERNAME, PASSWORD = '+918186866445', 'root'
+User = get_user_model()
 
 
-class UserList(generics.ListCreateAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [
-        permissions.IsAuthenticated,
-    ]
-
-
-class UserDetail(generics.RetrieveAPIView):
-    queryset = CustomUser.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [
-        permissions.IsAuthenticated,
-    ]
-
-
-class GroupList(generics.ListAPIView):
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-    permission_classes = [
-        permissions.IsAuthenticated,
-    ]
-
-
-@api_view()
-@authentication_classes([])
-@permission_classes([])
-def get_cart_items(request):
-    response = requests.post(
-        TOKEN_OBTAIN_ENDPOINT,
-        data={
-            'username': USERNAME,
-            'password': PASSWORD
+@api_view(['GET'])
+@permission_classes((permissions.AllowAny, ))
+def api_root(request):
+    return Response(
+        {
+            'register': reverse(viewname='register', request=request),
+            'login': reverse(viewname='login', request=request),
+            'logout': reverse(viewname='logout', request=request),
+            'user': reverse(viewname='user', request=request),
+            # 'token': reverse(viewname='token', request=request),
+            # 'verify': reverse(viewname='verify', request=request),
+            # 'refresh': reverse(viewname='refresh', request=request),
+            # 'user': reverse(viewname='user', request=request),
         },
-        headers={
-            "Accept": "application/json",
-        },
-        cookies={},
-        auth=(),
+        status=status.HTTP_200_OK
     )
 
-    token = response.json()['access']
 
-    response = requests.get(
-        CART_ENDPOINT,
-        data={},
-        headers={
-            'Authorization': f'Bearer {token}'
-        },
-        cookies={},
-        auth=(),
-    )
+class RegisterView(APIView):
 
-    return Response(response.json())
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+class LoginView(APIView):
+
+    def post(self, request):
+        phone_number = request.data['phone_number']
+        password = request.data['password']
+
+        user = User.objects.filter(phone_number=phone_number).first()
+
+        if user is None:
+            raise AuthenticationFailed('User not found!')
+
+        if not user.check_password(password):
+            raise AuthenticationFailed('Incorrect password!')
+
+        payload = {
+            'id': user.id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
+            'iat': datetime.datetime.utcnow()
+        }
+
+        token = jwt.encode(payload, 'secret', algorithm='HS256')
+
+        response = Response()
+
+        response.set_cookie(key='jwt', value=token, httponly=True)
+        response.data = {
+            'jwt': token
+        }
+        return response
+
+
+class UserView(APIView):
+
+    def get(self, request):
+        token = request.COOKIES.get('jwt')
+
+        if not token:
+            raise AuthenticationFailed('Unauthenticated!')
+
+        try:
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated!')
+
+        user = User.objects.filter(id=payload['id']).first()
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+
+class LogoutView(APIView):
+    def post(self, request):
+        response = Response()
+        response.delete_cookie('jwt')
+        response.data = {
+            'message': 'success'
+        }
+        return response
+
