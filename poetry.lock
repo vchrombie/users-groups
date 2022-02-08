@@ -46,6 +46,17 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-cors-headers"
+version = "3.11.0"
+description = "django-cors-headers is a Django application for handling the server headers required for Cross-Origin Resource Sharing (CORS)."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+Django = ">=2.2"
+
+[[package]]
 name = "django-phonenumber-field"
 version = "6.0.0"
 description = "An international phone number field for django models."
@@ -96,6 +107,14 @@ test = ["cryptography", "pytest-cov", "pytest-django", "pytest-xdist", "pytest",
 name = "idna"
 version = "3.3"
 description = "Internationalized Domain Names in Applications (IDNA)"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
+name = "mysqlclient"
+version = "2.1.0"
+description = "Python interface to MySQL"
 category = "main"
 optional = false
 python-versions = ">=3.5"
@@ -172,7 +191,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "44c6fcd9e1353aae9dd99d4e670f916a56aae89409fc46f31b78f8200ef1e7df"
+content-hash = "384a5fa1a2e47db4a3b1898319c205b1424158293d2d7be798ae29e85dd3f0e1"
 
 [metadata.files]
 asgiref = [
@@ -191,6 +210,10 @@ django = [
     {file = "Django-3.2.5-py3-none-any.whl", hash = "sha256:c58b5f19c5ae0afe6d75cbdd7df561e6eb929339985dbbda2565e1cabb19a62e"},
     {file = "Django-3.2.5.tar.gz", hash = "sha256:3da05fea54fdec2315b54a563d5b59f3b4e2b1e69c3a5841dda35019c01855cd"},
 ]
+django-cors-headers = [
+    {file = "django-cors-headers-3.11.0.tar.gz", hash = "sha256:eb98389bf7a2afc5d374806af4a9149697e3a6955b5a2dc2bf049f7d33647456"},
+    {file = "django_cors_headers-3.11.0-py3-none-any.whl", hash = "sha256:a22be2befd4069c4fc174f11cf067351df5c061a3a5f94a01650b4e928b0372b"},
+]
 django-phonenumber-field = [
     {file = "django-phonenumber-field-6.0.0.tar.gz", hash = "sha256:9695d3beda772c503ad4e04a4f7012a8227e9e3e4fd0ea4ffb07c43245bf4a8d"},
     {file = "django_phonenumber_field-6.0.0-py3-none-any.whl", hash = "sha256:bbb9cb2e6fc53c476de40428e1354c313a040e8b2fb69ea8ead4ba41a60f926a"},
@@ -206,6 +229,13 @@ djangorestframework-simplejwt = [
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},
     {file = "idna-3.3.tar.gz", hash = "sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d"},
+]
+mysqlclient = [
+    {file = "mysqlclient-2.1.0-cp310-cp310-win_amd64.whl", hash = "sha256:02c8826e6add9b20f4cb12dcf016485f7b1d6e30356a1204d05431867a1b3947"},
+    {file = "mysqlclient-2.1.0-cp37-cp37m-win_amd64.whl", hash = "sha256:b62d23c11c516cedb887377c8807628c1c65d57593b57853186a6ee18b0c6a5b"},
+    {file = "mysqlclient-2.1.0-cp38-cp38-win_amd64.whl", hash = "sha256:2c8410f54492a3d2488a6a53e2d85b7e016751a1e7d116e7aea9c763f59f5e8c"},
+    {file = "mysqlclient-2.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:e6279263d5a9feca3e0edbc2b2a52c057375bf301d47da2089c075ff76331d14"},
+    {file = "mysqlclient-2.1.0.tar.gz", hash = "sha256:973235686f1b720536d417bf0a0d39b4ab3d5086b2b6ad5e6752393428c02b12"},
 ]
 phonenumbers = [
     {file = "phonenumbers-8.12.42-py2.py3-none-any.whl", hash = "sha256:19f353604ef09b19165ebfc86f0a9e54df75939480c2508770f7d1a4adc8e194"},
