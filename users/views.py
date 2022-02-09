@@ -24,10 +24,6 @@ def api_root(request):
             'login': reverse(viewname='login', request=request),
             'logout': reverse(viewname='logout', request=request),
             'user': reverse(viewname='user', request=request),
-            # 'token': reverse(viewname='token', request=request),
-            # 'verify': reverse(viewname='verify', request=request),
-            # 'refresh': reverse(viewname='refresh', request=request),
-            # 'user': reverse(viewname='user', request=request),
         },
         status=status.HTTP_200_OK
     )
@@ -43,6 +39,10 @@ class RegisterView(APIView):
 
 
 class LoginView(APIView):
+
+    permission_classes = [
+        permissions.AllowAny,
+    ]
 
     def post(self, request):
         phone_number = request.data['phone_number']
@@ -75,18 +75,12 @@ class LoginView(APIView):
 
 class UserView(APIView):
 
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+
     def get(self, request):
-        token = request.COOKIES.get('jwt')
-
-        if not token:
-            raise AuthenticationFailed('Unauthenticated!')
-
-        try:
-            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
-        except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthenticated!')
-
-        user = User.objects.filter(id=payload['id']).first()
+        user = User.objects.filter(id=request.user.id).first()
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
