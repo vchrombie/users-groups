@@ -4,7 +4,7 @@ import jwt
 from django.contrib.auth import get_user_model
 
 from rest_framework import permissions, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -17,6 +17,7 @@ User = get_user_model()
 
 @api_view(['GET'])
 @permission_classes((permissions.AllowAny, ))
+@authentication_classes(())
 def api_root(request):
     return Response(
         {
@@ -44,6 +45,8 @@ class LoginView(APIView):
         permissions.AllowAny,
     ]
 
+    authentication_classes = []
+
     def post(self, request):
         phone_number = request.data['phone_number']
         password = request.data['password']
@@ -66,9 +69,10 @@ class LoginView(APIView):
 
         response = Response()
 
-        response.set_cookie(key='jwt', value=token, httponly=True)
+        # response.set_cookie(key='jwt', value=token, httponly=True)
+
         response.data = {
-            'jwt': token
+            "jwt": token,
         }
         return response
 
